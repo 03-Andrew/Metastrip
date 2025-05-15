@@ -1,0 +1,17 @@
+{
+    "manifest_version": 3,
+    "name": "MetaStrip",
+    "version": "1.0",
+    "description": "My Extension",
+    "action": {
+        "default_popup": "index.html"
+    },
+    "permissions": ["scripting"],
+    "host_permissions": [
+        "https://*/*",
+        "http://*/*"
+    ],
+    "icons": {
+        "32": "incognito.png"
+    }
+}
