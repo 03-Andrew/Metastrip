@@ -11,7 +11,7 @@ interface CleanFileResponse {
 }
 
 export const useCleanFile = () => {
-    const url = config.apiUrl + 'clean/';
+    const url = config.apiUrl + 'clean2/';
     
     return useMutation({
         mutationFn: async (fileId: string): Promise<CleanFileResponse> => {

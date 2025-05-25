@@ -104,7 +104,7 @@ const Start: React.FC = () => {
   const isPending = isUploading || isCleaning;
 
   return (
-    <div className="flex flex-col items-center justify-start w-[400px] min-h-[500px] bg-white rounded-xl shadow-lg p-6 relative overflow-hidden">
+    <div className="flex flex-col items-center justify-start w-[400px] min-h-[500px] bg-white shadow-lg p-6 relative overflow-hidden">
       {/* Cleaning Overlay */}
       {isCleaning && (
         <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
@@ -226,9 +226,9 @@ const Start: React.FC = () => {
           <div className="w-full flex flex-col items-center justify-center py-8">
             <div className="text-center mb-6">
               <p className="text-green-600 font-medium mb-2">Metadata Cleaned Successfully!</p>
-              <p className="text-sm text-gray-500">
-                Removed {Object.keys(fullMetadata).length - Object.keys(filteredMetadata).length} metadata fields
-              </p>
+              {/* <p className="text-sm text-gray-500">
+                Removed metadata fields
+              </p> */}
             </div>
             <div className="flex gap-4">
               <Button
