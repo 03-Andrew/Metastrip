@@ -15,7 +15,7 @@ export default function MetadataDisplay({
   onToggleSelection,
 }: MetadataDisplayProps) {
   return (
-    <ScrollArea className="h-[200px] pr-2">
+    <ScrollArea className="h-[150px] pr-2">
       <div className="space-y-0.5">
         {Object.entries(metadata).map(([key, value]) => (
           <div

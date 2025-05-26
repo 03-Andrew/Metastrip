@@ -25,21 +25,28 @@ const Start: React.FC = () => {
     responseData,
   } = useBatchFileUpload();
 
-  const { mutate: cleanFile, isPending: isCleaning, responseData: download_url } = useCleanFiles();
+  const {
+    mutate: cleanFile,
+    isPending: isCleaning,
+    responseData: download_url,
+  } = useCleanFiles();
+
+  const handleBack = () => {
+    window.location.reload();
+  };
 
   useEffect(() => {
-    if (responseData) {
+    if (responseData && !isProcessed) {
       setFileIds(responseData.file_ids);
       setFiles(responseData.files);
       setIsProcessed(true);
       setIsCleaned(false);
     }
 
-    if (download_url) {
+    if (download_url && !isCleaned) {
       setDownloadUrl(download_url.download_url);
       setIsCleaned(true);
     }
-
   }, [responseData, download_url]);
 
   const handleFilesUpload = (files: File[]) => {
@@ -55,15 +62,6 @@ const Start: React.FC = () => {
     handleFilesUpload(files);
   };
 
-  const handleBack = () => {
-    setSelectedFiles([]);
-    setIsProcessed(false);
-    setIsCleaned(false);
-    setDownloadUrl("");
-    setFileIds([]);
-    setFiles([]);
-  };
-
   const handleDownload = () => {
     if (downloadUrl) {
       window.location.href = config.apiUrl + downloadUrl.slice(1);
@@ -73,12 +71,12 @@ const Start: React.FC = () => {
   const isPending = isCleaning || isBatchUploading;
 
   return (
-    <div className="flex flex-col items-center justify-start w-[400px] min-h-[500px] bg-white shadow-lg p-6 relative overflow-hidden">
+    <div className="flex flex-col items-center justify-start w-[400px] h-[500px] bg-white shadow-lg p-6 relative overflow-hidden">
       {/* Cleaning Overlay */}
       {isCleaning && <LoaderOverlay message="Cleaning metadata..." />}
 
       {/* Header */}
-      <div className="w-full mb-8">
+      <div className="w-full mb-4">
         <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Metastrip
         </h1>
@@ -117,7 +115,7 @@ const Start: React.FC = () => {
         )}
 
         {/* Download View */}
-        {isCleaned && downloadUrl && (
+        {downloadUrl && (
           <DownloadView
             handleDownload={handleDownload}
             handleBack={handleBack}
@@ -126,7 +124,7 @@ const Start: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="mt-6 w-full text-center">
+      <div className="mt-4 w-full text-center">
         <p className="text-xs text-gray-400">Secure metadata management</p>
       </div>
     </div>
@@ -134,22 +132,3 @@ const Start: React.FC = () => {
 };
 
 export default Start;
-
-// const handleCleanFile = () => {
-//   if (!fileId) return;
-
-//   cleanFile(fileId, {
-//     onSuccess: (data: CleanFileResponse) => {
-//       console.log('Clean Response:', data);
-//       setDownloadUrl(data.download_url);
-//       setFullMetadata(data.metadata);
-//       setFilteredMetadata(data.filtered_metadata);
-//       setIsCleaned(true);
-//       toast.success("Metadata cleaned successfully!");
-//     },
-//     onError: (error) => {
-//       console.error('Clean Error:', error);
-//       toast.error("Failed to clean metadata. Please try again.");
-//     }
-//   });
-// };

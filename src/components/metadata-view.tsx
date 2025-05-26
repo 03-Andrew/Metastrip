@@ -53,7 +53,7 @@ export default function MetadataView({
               // Call the clean metadata function here
               // cleanMetadata(selectedFile.fileid);
               cleanFiles(fileIds || []);
-              console.log(JSON.stringify(fileIds      , null, 2));
+              console.log(JSON.stringify(fileIds, null, 2));
             }
           }}
         >
