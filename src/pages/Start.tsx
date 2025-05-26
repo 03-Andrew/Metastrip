@@ -6,31 +6,26 @@ import LoaderOverlay from "@/components/loader-overlay";
 import DownloadView from "@/components/download-view";
 
 import { useBatchFileUpload } from "@/hooks/usefileUpload";
-import { useCleanFile } from "@/hooks/useCleanFile";
+import { useCleanFiles } from "@/hooks/useCleanFile";
 import { config } from "@/config/env";
 
 import type { FileInterface } from "../utils/uploadResponse";
-
 
 const Start: React.FC = () => {
   const [fileIds, setFileIds] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [files, setFiles] = useState<FileInterface[]>([]);
-
-  const [fullMetadata, setFullMetadata] = useState<Record<string, string>>({});
-  const [filteredMetadata, setFilteredMetadata] = useState<
-    Record<string, string>
-  >({});
   const [isProcessed, setIsProcessed] = useState(false);
   const [isCleaned, setIsCleaned] = useState(false);
   const [downloadUrl, setDownloadUrl] = useState<string>("");
-  // const [activeTab, setActiveTab] = useState<TabType>('full');
+
   const {
     mutate: uploadFiles,
     isPending: isBatchUploading,
     responseData,
   } = useBatchFileUpload();
-  const { mutate: cleanFile, isPending: isCleaning } = useCleanFile();
+
+  const { mutate: cleanFile, isPending: isCleaning, responseData: download_url } = useCleanFiles();
 
   useEffect(() => {
     if (responseData) {
@@ -39,7 +34,13 @@ const Start: React.FC = () => {
       setIsProcessed(true);
       setIsCleaned(false);
     }
-  }, [responseData]);
+
+    if (download_url) {
+      setDownloadUrl(download_url.download_url);
+      setIsCleaned(true);
+    }
+
+  }, [responseData, download_url]);
 
   const handleFilesUpload = (files: File[]) => {
     if (files.length === 0) return;
@@ -56,11 +57,11 @@ const Start: React.FC = () => {
 
   const handleBack = () => {
     setSelectedFiles([]);
-    setFullMetadata({});
-    setFilteredMetadata({});
     setIsProcessed(false);
     setIsCleaned(false);
     setDownloadUrl("");
+    setFileIds([]);
+    setFiles([]);
   };
 
   const handleDownload = () => {
@@ -108,16 +109,16 @@ const Start: React.FC = () => {
         {isProcessed && !isCleaned && (
           <MetadataView
             files={files}
+            fileIds={fileIds}
             isPending={isPending}
             handleBack={handleBack}
+            cleanFiles={cleanFile}
           />
         )}
 
         {/* Download View */}
         {isCleaned && downloadUrl && (
           <DownloadView
-            fullMetadata={fullMetadata}
-            filteredMetadata={filteredMetadata}
             handleDownload={handleDownload}
             handleBack={handleBack}
           />

@@ -29,3 +29,21 @@ export const uploadFiles = async (files: File[], url: string) => {
 
   return response.json();
 };
+
+
+export const cleanMetadata = async (fileIds: string[], url: string) => {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(fileIds),
+    
+  });
+
+  if (!response.ok) {
+    throw new Error(`Clean metadata failed: ${response.statusText}`);
+  }
+
+  return response.json();
+}

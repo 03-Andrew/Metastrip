@@ -2,15 +2,11 @@ import { Button } from "./ui/button";
 import { Download } from "lucide-react";
 
 interface DownloadViewProps {
-  fullMetadata: Record<string, string>;
-  filteredMetadata: Record<string, string>;
   handleDownload: () => void;
   handleBack: () => void;
 }
 
 export default function DownloadView({
-  fullMetadata,
-  filteredMetadata,
   handleDownload,
   handleBack,
 }: DownloadViewProps) {
@@ -20,11 +16,8 @@ export default function DownloadView({
         <p className="text-green-600 font-medium mb-2">
           Metadata Cleaned Successfully!
         </p>
-        <p className="text-sm text-gray-500">
-          Removed{" "}
-          {Object.keys(fullMetadata).length -
-            Object.keys(filteredMetadata).length}{" "}
-          metadata fields
+        <p className="text-gray-500 text-sm">
+          Your file has been cleaned and is ready for download.
         </p>
       </div>
       <div className="flex gap-4">

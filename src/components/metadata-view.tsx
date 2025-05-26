@@ -1,27 +1,33 @@
 import { Button } from "./ui/button";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { useState } from "react";
+
 import MetadataDisplay from "./metadata-display";
-// import { cn } from "@/lib/utils";
+import MetadataTabs from "./metadata-tabs";
+import MetadataSelectFile from "./metadata-selectfile";
+
 import type { FileInterface } from "../utils/uploadResponse";
 
 interface MetadataViewProps {
   files: FileInterface[];
+  fileIds?: string[];
   handleBack: () => void;
   isPending: boolean;
+  cleanFiles?: (fileIds: string[]) => void;
 }
 
 export default function MetadataView({
   files,
+  fileIds,
   handleBack,
   isPending,
+  cleanFiles
 }: MetadataViewProps) {
-  
-
   const [selectedFileId, setSelectedFileId] = useState(files[0]?.fileid || "");
   const [activeTab, setActiveTab] = useState<"full" | "filtered">("filtered");
 
   const selectedFile = files.find((file) => file.fileid === selectedFileId);
+
   if (!selectedFile) return <p>No file selected or available.</p>;
 
   return (
@@ -31,7 +37,7 @@ export default function MetadataView({
         <Button
           variant="ghost"
           size="sm"
-          className="text-xs flex items-center gap-1.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100/80"
+          className="text-xs flex items-center gap-1.5 text-gray-600"
           onClick={handleBack}
         >
           <ArrowLeft className="h-3.5 w-3.5" />
@@ -42,43 +48,36 @@ export default function MetadataView({
           size="sm"
           className="text-xs flex items-center gap-1.5"
           disabled={isPending}
+          onClick={() => {
+            if (selectedFile && cleanFiles) {
+              // Call the clean metadata function here
+              // cleanMetadata(selectedFile.fileid);
+              cleanFiles(fileIds || []);
+              console.log(JSON.stringify(fileIds      , null, 2));
+            }
+          }}
         >
           <Trash2 className="h-3.5 w-3.5" />
           Clean Metadata
         </Button>
       </div>
-      {/* File Selector */}
-      <select
-        className="w-full mb-3 text-sm border rounded p-2 text-gray-800"
-        value={selectedFileId}
-        onChange={(e) => setSelectedFileId(e.target.value)}
-      >
-        {files.map((file) => (
-          <option key={file.fileid} value={file.fileid}>
-            {file.filename}
-          </option>
-        ))}
-      </select>
 
-      {/* Tab Toggle */}
-      <div className="flex gap-2 mb-3">
-        <Button
-          variant={activeTab === "filtered" ? "default" : "ghost"}
-          size="sm"
-          className="text-xs"
-          onClick={() => setActiveTab("filtered")}
-        >
-          Filtered Metadata
-        </Button>
-        <Button
-          variant={activeTab === "full" ? "default" : "ghost"}
-          size="sm"
-          className="text-xs"
-          onClick={() => setActiveTab("full")}
-        >
-          Full Metadata
-        </Button>
-      </div>
+      {/* File Selector */}
+      <MetadataSelectFile
+        files={files.map((file) => ({
+          fileid: file.fileid,
+          filename: file.filename,
+        }))}
+        selectedFileId={selectedFileId}
+        setSelectedFileId={setSelectedFileId}/>
+
+      {/* Tabs */}
+      <MetadataTabs
+        selectedFile={selectedFile}
+        setActiveTab={setActiveTab}
+        activeTab={activeTab}
+      />
+
       {/* Metadata Display */}
       <div className="bg-gray-50/50 rounded-lg p-4 border border-gray-100">
         {selectedFile && (
