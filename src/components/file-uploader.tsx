@@ -1,16 +1,13 @@
-// import type React from "react";
-
-import { useState, useCallback } from "react"
-import { Upload } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { useState, useCallback } from "react";
+import { Upload } from "lucide-react";
+// import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
 
 interface FileUploaderProps {
-  onFileSelect?: (file: File | null) => void;
-  acceptedFileTypes?: string;
+  onFileSelect?: (files: File[]) => void; // Changed to File[]
 }
 
-export default function FileUpload({ onFileSelect, acceptedFileTypes }: FileUploaderProps) {
+export default function FileUpload({ onFileSelect }: FileUploaderProps) {
   const [isDragging, setIsDragging] = useState(false);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -25,56 +22,56 @@ export default function FileUpload({ onFileSelect, acceptedFileTypes }: FileUplo
     setIsDragging(false);
   }, []);
 
-  const handleDrop = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
+  const handleDrop = useCallback(
+    (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
 
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length > 0) {
-      onFileSelect?.(files[0]);
-    }
-  }, [onFileSelect]);
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length > 0) {
+        onFileSelect?.(files);
+      }
+    },
+    [onFileSelect]
+  );
 
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      onFileSelect?.(files[0]);
-    }
-  };
+  const handleFileSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      if (files.length > 0) {
+        onFileSelect?.(files);
+      }
+    },
+    [onFileSelect]
+  );
 
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 p-4 transition-colors",
-        isDragging ? "border-primary bg-gray-100" : "border-gray-400 bg-gray-50"
+        "flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer",
+        isDragging ? "border-primary bg-muted/50" : "border-muted-foreground/25"
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
+      onClick={() => document.getElementById("fileInput")?.click()}
     >
-      <div className="mb-2 rounded-full bg-gray-100 p-2">
-        <Upload className="h-4 w-4 text-gray-500" />
-      </div>
-      <p className="mb-1 text-xs font-medium">Drag & drop your file here</p>
-      <p className="mb-2 text-[10px] text-gray-500">or</p>
-      <Button 
-        size="sm" 
-        variant="default" 
-        className="text-xs" 
-        onClick={() => document.getElementById('file-input')?.click()}
-      >
-        Browse Files
-      </Button>
-      <input 
-        id="file-input"
-        type="file" 
-        className="hidden" 
-        onChange={handleFileInput}
-        accept={acceptedFileTypes}
+      <input
+        id="fileInput"
+        type="file"
+        className="hidden"
+        multiple
+        onChange={handleFileSelect}
       />
-      <p className="mt-2 text-[10px] text-gray-500">Supports images, documents, audio, and video</p>
+      <Upload className="w-10 h-10 mb-3 text-muted-foreground" />
+      <p className="mb-2 text-sm text-muted-foreground">
+        <span className="font-semibold">Click to upload</span> or drag and drop
+        multiple files
+      </p>
+      <p className="text-xs text-muted-foreground">
+        {"Any file type accepted"}
+      </p>
     </div>
-  )
+  );
 }
-

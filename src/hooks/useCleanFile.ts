@@ -11,7 +11,7 @@ interface CleanFileResponse {
 }
 
 export const useCleanFile = () => {
-    const url = config.apiUrl + 'clean2/';
+    const url = config.apiUrl + 'clean/';
     
     return useMutation({
         mutationFn: async (fileId: string): Promise<CleanFileResponse> => {
@@ -27,3 +27,25 @@ export const useCleanFile = () => {
         }
     });
 };
+
+export const useCleanBatchFile = () => {
+    const url = config.apiUrl + 'clean/batch/';
+
+    return useMutation({
+        mutationFn: async (fileIds: string[]): Promise<CleanFileResponse[]> => {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ file_ids: fileIds })
+            });
+
+            if (!response.ok) {
+                throw new Error(`Batch clean failed: ${response.statusText}`);
+            }
+
+            return response.json();
+        }
+    });
+}
