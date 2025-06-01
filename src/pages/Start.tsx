@@ -32,7 +32,15 @@ const Start: React.FC = () => {
   } = useCleanFiles();
 
   const handleBack = () => {
-    window.location.reload();
+    if (isProcessed && isCleaned) {
+      window.location.reload();
+    } else {
+      setIsProcessed(false);
+      setIsCleaned(false);
+      setDownloadUrl("");
+      setFileIds([]);
+      setFiles([]);
+    }
   };
 
   useEffect(() => {
@@ -96,7 +104,12 @@ const Start: React.FC = () => {
         {/* Upload View */}
         {!isBatchUploading && !isProcessed && (
           <div className="w-full">
-            <FileUpload onFileSelect={handleFileSelect} />
+            <FileUpload
+              onFileSelect={handleFileSelect}
+              handleFilesUpload={handleFilesUpload}
+              selectedFiles={selectedFiles}
+              setSelectedFiles={setSelectedFiles}
+            />
           </div>
         )}
 

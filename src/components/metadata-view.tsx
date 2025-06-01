@@ -24,7 +24,7 @@ export default function MetadataView({
   cleanFiles
 }: MetadataViewProps) {
   const [selectedFileId, setSelectedFileId] = useState(files[0]?.fileid || "");
-  const [activeTab, setActiveTab] = useState<"full" | "filtered">("filtered");
+  const [activeTab, setActiveTab] = useState<"full" | "filtered">("full");
 
   const selectedFile = files.find((file) => file.fileid === selectedFileId);
 
