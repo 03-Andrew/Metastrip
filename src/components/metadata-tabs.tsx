@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { FileInterface } from "../utils/uploadResponse";
 
+
 interface MetadataTabsProps {
   selectedFile: FileInterface;
   setActiveTab: (tab: "full" | "filtered") => void;
@@ -12,6 +13,8 @@ export default function MetadataTabs({
   setActiveTab,
   activeTab,
 }: MetadataTabsProps) {
+  const items = Object.entries(selectedFile.filtered);
+  // console.log(selectedFile)
   return (
     <div className="border-b border-gray-200 mb-4">
       <div className="flex gap-4 w-full">
@@ -38,9 +41,10 @@ export default function MetadataTabs({
           )}
           onClick={() => setActiveTab("filtered")}
         >
-          Filtered Metadata
+          Deletable Metadata
           <span className="ml-2 text-xs text-gray-400">
-            ({Object.keys(selectedFile.filtered).length})
+
+            ({Object.keys(items).length})
           </span>
         </button>
       </div>

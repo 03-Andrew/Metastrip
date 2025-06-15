@@ -14,6 +14,12 @@ interface MetadataViewProps {
   handleBack: () => void;
   isPending: boolean;
   cleanFiles?: (fileIds: string[]) => void;
+  selectedFields: string[];
+  selectedFileFields: Record<string, string[]>;
+  setSelectedFields: React.Dispatch<React.SetStateAction<string[]>>;
+  setSelectedFileFields: React.Dispatch<
+    React.SetStateAction<Record<string, string[]>>
+  >;
 }
 
 export default function MetadataView({
@@ -21,14 +27,58 @@ export default function MetadataView({
   fileIds,
   handleBack,
   isPending,
-  cleanFiles
+  cleanFiles,
+  selectedFields,
+  selectedFileFields,
+  setSelectedFields,
+  setSelectedFileFields,
 }: MetadataViewProps) {
   const [selectedFileId, setSelectedFileId] = useState(files[0]?.fileid || "");
   const [activeTab, setActiveTab] = useState<"full" | "filtered">("full");
-
   const selectedFile = files.find((file) => file.fileid === selectedFileId);
 
   if (!selectedFile) return <p>No file selected or available.</p>;
+  const addFields = (key: string) => {
+    setSelectedFields((prevFields) => {
+      // Check if key already exists
+      if (prevFields.includes(key)) {
+        return prevFields;
+      }
+      // Add new unique key
+      return [...prevFields, key];
+    });
+  };
+
+  const addFieldToFile = (fileId: string, field: string) => {
+    setSelectedFileFields((prev) => {
+      const currentFields = prev[fileId] || [];
+      if (currentFields.includes(field)) {
+        return prev; // Field already added, no update
+      }
+
+      return {
+        ...prev,
+        [fileId]: [...currentFields, field],
+      };
+    });
+  };
+
+  const removeFieldFromFile = (fileId: string, field: string) => {
+    setSelectedFileFields((prev) => {
+      const currentFields = prev[fileId] || [];
+
+      const updatedFields = currentFields.filter((f) => f !== field);
+
+      return {
+        ...prev,
+        [fileId]: updatedFields,
+      };
+    });
+  };
+
+  const removeFields = (item: string) => {
+    setSelectedFields((prevItems) => prevItems.filter((i) => i !== item));
+  };
 
   return (
     <div className="w-full">
@@ -50,10 +100,9 @@ export default function MetadataView({
           disabled={isPending}
           onClick={() => {
             if (selectedFile && cleanFiles) {
-              // Call the clean metadata function here
-              // cleanMetadata(selectedFile.fileid);
-              cleanFiles(fileIds || []);
-              console.log(JSON.stringify(fileIds, null, 2));
+              // cleanFiles(fileIds || []);
+              // console.log(JSON.stringify(fileIds, null, 2));
+              console.log(selectedFileFields);
             }
           }}
         >
@@ -69,7 +118,8 @@ export default function MetadataView({
           filename: file.filename,
         }))}
         selectedFileId={selectedFileId}
-        setSelectedFileId={setSelectedFileId}/>
+        setSelectedFileId={setSelectedFileId}
+      />
 
       {/* Tabs */}
       <MetadataTabs
@@ -87,9 +137,14 @@ export default function MetadataView({
                 ? selectedFile.metadata
                 : selectedFile.filtered
             }
-            isSelectionMode={false}
-            selectedKeys={[]}
-            onToggleSelection={() => {}}
+            selectedFile={selectedFile}
+            isSelectionMode={activeTab === "filtered"}
+            addField={addFields}
+            addFileField={addFieldToFile}
+            removeFileField={removeFieldFromFile}
+            removeField={removeFields}
+            selectedFields={selectedFields}
+            selectedFileFields={selectedFileFields}
           />
         )}
       </div>

@@ -14,6 +14,10 @@ import type { FileInterface } from "../utils/uploadResponse";
 const Start: React.FC = () => {
   const [fileIds, setFileIds] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+
+  const [selectedFileFields, setSelectedFileFields] = useState<Record<string, string[]>>({})
+
   const [files, setFiles] = useState<FileInterface[]>([]);
   const [isProcessed, setIsProcessed] = useState(false);
   const [isCleaned, setIsCleaned] = useState(false);
@@ -57,6 +61,11 @@ const Start: React.FC = () => {
     }
   }, [responseData, download_url]);
 
+  useEffect(() =>{
+    console.log(selectedFields)
+  }
+  ,[])
+
   const handleFilesUpload = (files: File[]) => {
     if (files.length === 0) return;
     uploadFiles(files);
@@ -79,7 +88,7 @@ const Start: React.FC = () => {
   const isPending = isCleaning || isBatchUploading;
 
   return (
-    <div className="flex flex-col items-center justify-start w-[400px] h-[500px] bg-white shadow-lg p-6 relative overflow-hidden">
+    <div className="flex flex-col items-center justify-start w-[420px] h-[550px] bg-white shadow-lg p-6 relative overflow-hidden">
       {/* Cleaning Overlay */}
       {isCleaning && <LoaderOverlay message="Cleaning metadata..." />}
 
@@ -124,6 +133,10 @@ const Start: React.FC = () => {
             isPending={isPending}
             handleBack={handleBack}
             cleanFiles={cleanFile}
+            selectedFields={selectedFields}
+            selectedFileFields={selectedFileFields}
+            setSelectedFields={setSelectedFields}
+            setSelectedFileFields={setSelectedFileFields}
           />
         )}
 

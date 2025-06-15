@@ -74,7 +74,7 @@ export default function FileUpload({
           isDragging
             ? "border-primary bg-muted/50"
             : "border-muted-foreground/25",
-          selectedFiles.length > 0 ? "h-24" : "h-64"
+          selectedFiles.length > 0 ? "h-28" : "h-82"
         )}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -96,7 +96,7 @@ export default function FileUpload({
       </div>
 
       {selectedFiles.length > 0 && (
-        <div className="mt-4 overflow-y-auto h-[150px] p-2 border rounded-lg bg-gray-50/50">
+        <div className="mt-4 overflow-y-auto h-[200px] p-2 border rounded-lg bg-gray-50/50">
           <ul className="space-y-2">
             {selectedFiles.map((file) => (
               <li
