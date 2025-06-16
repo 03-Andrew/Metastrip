@@ -9,49 +9,55 @@ import {
 import { Button } from "@/components/ui/button";
 
 interface GroupDropdownSelectorProps {
+  fileId: string;
   metadata: Record<string, string>;
-  selectedFields: string[];
-  addField: (item: string) => void;
-  removeField: (item: string) => void;
+  selectedFileFields: Record<string, string[]>;
+  addFileField: (id: string, item: string) => void;
+  removeFileField: (id: string, item: string) => void;
 }
 
 export default function GroupDropdownSelector({
+  fileId,
   metadata,
-  selectedFields,
-  addField,
-  removeField,
+  selectedFileFields,
+  addFileField,
+  removeFileField,
 }: GroupDropdownSelectorProps) {
-  // Group metadata keys like File:ExifByteOrder → File group
-  const groupMap: Record<string, string[]> = {};
+  // Determine which fields are currently selected for this file
+  const selectedFields = selectedFileFields[fileId] || [];
 
+  // Group metadata keys by their prefix group
+  const groupMap: Record<string, string[]> = {};
   Object.keys(metadata).forEach((key) => {
     const [group] = key.split(":");
     if (!groupMap[group]) groupMap[group] = [];
     groupMap[group].push(key);
   });
-
   const groupNames = Object.keys(groupMap);
 
+  // Check if all keys in a group are selected
   const isGroupSelected = (group: string) =>
     groupMap[group]?.every((key) => selectedFields.includes(key));
 
+  // Toggle entire group on/off for this file
   const toggleGroup = (group: string, checked: boolean) => {
     const keys = groupMap[group] || [];
     if (checked) {
-      keys.forEach((key) => addField(key));
+      keys.forEach((key) => addFileField(fileId, key));
     } else {
-      keys.forEach((key) => removeField(key));
+      keys.forEach((key) => removeFileField(fileId, key));
     }
   };
+
+  // "Select All" logic for this file
   const allKeys = Object.keys(metadata);
   const allSelected =
     allKeys.length > 0 && allKeys.every((key) => selectedFields.includes(key));
-
   const toggleSelectAll = (checked: boolean) => {
     if (checked) {
-      allKeys.forEach((key) => addField(key));
+      allKeys.forEach((key) => addFileField(fileId, key));
     } else {
-      allKeys.forEach((key) => removeField(key));
+      allKeys.forEach((key) => removeFileField(fileId, key));
     }
   };
 
@@ -66,14 +72,15 @@ export default function GroupDropdownSelector({
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>Groups</DropdownMenuLabel>
           <DropdownMenuSeparator />
+
           <DropdownMenuCheckboxItem
             checked={allSelected}
             onCheckedChange={(checked) => toggleSelectAll(checked === true)}
           >
             Select All
           </DropdownMenuCheckboxItem>
-          <DropdownMenuSeparator />
 
+          <DropdownMenuSeparator />
           {groupNames.map((group) => (
             <DropdownMenuCheckboxItem
               key={group}

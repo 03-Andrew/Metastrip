@@ -5,4 +5,5 @@ export interface FileInterface {
   filetype: string;
   filtered: Record<string, string>;
   metadata: Record<string, string>;
+  selectable: Record<string, string>;
 }

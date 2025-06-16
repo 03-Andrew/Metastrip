@@ -31,14 +31,16 @@ export const uploadFiles = async (files: File[], url: string) => {
 };
 
 
-export const cleanMetadata = async (fileIds: string[], url: string) => {
+export const cleanMetadata = async (
+  fileIds: Record<string, string[]>,
+  url: string
+) => {
   const response = await fetch(url, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(fileIds),
-    
   });
 
   if (!response.ok) {
@@ -46,4 +48,4 @@ export const cleanMetadata = async (fileIds: string[], url: string) => {
   }
 
   return response.json();
-}
+};

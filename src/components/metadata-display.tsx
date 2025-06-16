@@ -6,88 +6,119 @@ import { cn } from "@/lib/utils";
 
 interface MetadataDisplayProps {
   metadata: Record<string, string>;
-  isSelectionMode: boolean;
+  tab: "full" | "filtered" | "selectable";
   selectedFile: FileInterface;
   selectedFileFields: Record<string, string[]>;
-  addField: (item: string) => void;
   addFileField: (id: string, item: string) => void;
-  removeField: (item: string) => void;
   removeFileField: (id: string, item: string) => void;
-  selectedFields: string[];
-
 }
 
 export default function MetadataDisplay({
   metadata,
-  isSelectionMode,
+  tab,
   selectedFile,
   selectedFileFields,
-  addField,
-  removeField,
   addFileField,
   removeFileField,
-  selectedFields,
 }: MetadataDisplayProps) {
-  console.log(selectedFile.filename);
+  const fileId = selectedFile.fileid;
+  console.log(metadata);
+
   const toggleField = (item: string, checked: boolean) => {
     if (checked) {
-      addFileField(selectedFile.filename, item);
+      addFileField(fileId, item);
     } else {
-      removeFileField(selectedFile.filename, item);
+      removeFileField(fileId, item);
     }
   };
 
+  const keys = Object.keys(metadata);
+
+  // Check if '-all=' flag is set for filtered tab
+  const allDeleted = selectedFileFields[fileId]?.includes("all") ?? false;
+
   return (
     <div className="h-[200px]">
-      {isSelectionMode && (
+      {Object.keys(metadata).length === 0 && (
+        <p className="text-sm text-gray-500">No metadata available</p>
+      )}
+
+      {tab === "selectable" && Object.keys(metadata).length !== 0 && (
         <GroupDropdownSelector
+          fileId={fileId}
+          addFileField={addFileField}
+          removeFileField={removeFileField}
           metadata={metadata}
-          selectedFields={selectedFields}
-          addField={addField}
-          removeField={removeField}
+          selectedFileFields={selectedFileFields}
         />
       )}
-      <ScrollArea className={cn(isSelectionMode ? "h-[170px]" : "h-[200px]")}>
-        <div className="pr-2">
-        <div className="space-y-0.5">
-          {Object.entries(metadata).map(([key, value]) => (
-            <div
-              key={key}
-              onClick={() =>
-                isSelectionMode &&
-                toggleField(key, !selectedFileFields[selectedFile.filename]?.includes(key)
-                
-              )
+
+      {tab === "filtered" && Object.keys(metadata).length !== 0 && (
+        <div className="flex items-center pb-2">
+          <Checkbox
+            id="select-all"
+            checked={allDeleted}
+            onCheckedChange={(checked) => {
+              if (checked) {
+                // remove individual selections
+                keys.forEach((key) => removeFileField(fileId, key));
+                // add -all= flag
+                addFileField(fileId, "all");
+              } else {
+                // remove -all= flag
+                removeFileField(fileId, "all");
               }
-              className={cn(
-                "flex items-center justify-between border-b border-gray-100 py-1.5 last:border-0",
-                isSelectionMode && "cursor-pointer hover:bg-gray-50"
-              )}
-            >
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-medium text-gray-800">
-                  {isSelectionMode && (
-                    <span className="inline-block align-middle pr-1">
+            }}
+          />
+          <label htmlFor="select-all" className="ml-2 text-sm font-medium">
+            Remove All
+          </label>
+        </div>
+      )}
+
+      <ScrollArea
+        className={cn(tab === "selectable" ? "h-[170px]" : tab ==="filtered" ? "h-[180px]":"h-[200px]")}
+      >
+        <div className="pr-2">
+          <div className="space-y-0.5">
+            {keys.map((key) => {
+              // Checkbox checked if either individual selected or allDeleted is true
+              const isChecked =
+                allDeleted ||
+                (selectedFileFields[fileId]?.includes(key) ?? false);
+              return (
+                <div
+                  key={key}
+                  onClick={() =>
+                    tab === "selectable" && toggleField(key, !isChecked)
+                  }
+                  className={cn(
+                    "flex items-center justify-between border-b border-gray-100 py-1.5 last:border-0",
+                    tab === "selectable" && "cursor-pointer hover:bg-gray-50"
+                  )}
+                >
+                  <div className="flex items-center gap-1.5">
+                    {tab === "selectable" && (
                       <Checkbox
                         id={`checkbox-${key}`}
-                        checked={selectedFileFields[selectedFile.filename]?.includes(key)
-                        }
+                        checked={isChecked}
                         onCheckedChange={(checked) =>
                           toggleField(key, checked === true)
                         }
                         onClick={(e) => e.stopPropagation()}
                       />
+                    )}
+                    <span className="ml-2 text-xs font-medium text-gray-800">
+                      {key}:
                     </span>
-                  )}
-                  {key}:
-                </span>
-              </div>
-              <span className="max-w-[150px] break-words text-right text-xs text-gray-600">
-                {value}
-              </span>
-            </div>
-          ))}
-        </div>
+                  </div>
+                  <span className="max-w-[150px] break-words text-right text-xs text-gray-600">
+                    {metadata[key]}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </ScrollArea>
     </div>

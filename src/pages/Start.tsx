@@ -12,9 +12,7 @@ import { config } from "@/config/env";
 import type { FileInterface } from "../utils/uploadResponse";
 
 const Start: React.FC = () => {
-  const [fileIds, setFileIds] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [selectedFields, setSelectedFields] = useState<string[]>([]);
 
   const [selectedFileFields, setSelectedFileFields] = useState<Record<string, string[]>>({})
 
@@ -42,14 +40,14 @@ const Start: React.FC = () => {
       setIsProcessed(false);
       setIsCleaned(false);
       setDownloadUrl("");
-      setFileIds([]);
       setFiles([]);
+      setSelectedFileFields({});
+
     }
   };
 
   useEffect(() => {
     if (responseData && !isProcessed) {
-      setFileIds(responseData.file_ids);
       setFiles(responseData.files);
       setIsProcessed(true);
       setIsCleaned(false);
@@ -61,10 +59,7 @@ const Start: React.FC = () => {
     }
   }, [responseData, download_url]);
 
-  useEffect(() =>{
-    console.log(selectedFields)
-  }
-  ,[])
+
 
   const handleFilesUpload = (files: File[]) => {
     if (files.length === 0) return;
@@ -129,13 +124,10 @@ const Start: React.FC = () => {
         {isProcessed && !isCleaned && (
           <MetadataView
             files={files}
-            fileIds={fileIds}
             isPending={isPending}
             handleBack={handleBack}
             cleanFiles={cleanFile}
-            selectedFields={selectedFields}
             selectedFileFields={selectedFileFields}
-            setSelectedFields={setSelectedFields}
             setSelectedFileFields={setSelectedFileFields}
           />
         )}
