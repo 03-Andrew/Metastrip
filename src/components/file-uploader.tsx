@@ -2,6 +2,12 @@ import { useState, useCallback, useRef } from "react";
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+
+// Allowed file types (case-insensitive)
+const allowedFileTypes = [
+  'jpg', 'jpeg', 'png', 'pdf', 'heic', 'mp4', 'docx', 'xlsx','webp', "mov"
+];
 
 interface FileUploaderProps {
   onFileSelect?: (files: File[]) => void;
@@ -22,7 +28,19 @@ export default function FileUpload({
   const addFiles = (files: File[]) => {
     setSelectedFiles((prev: File[]) => {
       const existingNames = new Set(prev.map((file) => file.name));
-      const newFiles = files.filter((f) => !existingNames.has(f.name));
+      const newFiles: File[] = []
+
+      files.forEach((file) => {
+        const ext = file.name.split('.').pop()?.toLowerCase() || '';
+        if (!allowedFileTypes.includes(ext)) {
+          toast.error(`\"${file.name}\" is not a supported file type.`);
+          return;
+        }
+        if (!existingNames.has(file.name)) {
+          newFiles.push(file);
+        }
+      });
+
       return [...prev, ...newFiles];
     });
   };
@@ -109,6 +127,7 @@ export default function FileUpload({
                   onClick={(e) => {
                     e.stopPropagation();
                     handleRemoveFile(file.name);
+                    toast(`Removed ${file.name}`);
                   }}
                 >
                   <X className="w-4 h-4" />
@@ -133,3 +152,4 @@ export default function FileUpload({
     </div>
   );
 }
+

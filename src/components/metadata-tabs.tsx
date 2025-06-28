@@ -8,13 +8,24 @@ interface MetadataTabsProps {
   activeTab: "full" | "filtered" | "selectable";
 }
 
+const OFFICE_EXTENSIONS = [
+  '.doc', '.docx',  // Word
+  '.xls', '.xlsx',  // Excel
+  // '.ppt', '.pptx',  // PowerPoint
+  // '.vsd', '.vsdx',  // Visio
+  // '.pub',           // Publisher
+  // '.mdb', '.accdb'  // Access
+];
+
 export default function MetadataTabs({
   selectedFile,
   setActiveTab,
   activeTab,
 }: MetadataTabsProps) {
   const filename = selectedFile.filename.toLowerCase();
-  const isOfficeFile = filename.endsWith(".docx") || filename.endsWith(".xlsx");
+  const isOfficeFile = OFFICE_EXTENSIONS.some(ext => 
+    filename.toLowerCase().endsWith(ext)
+  );
 
   // If it's an Office file, force selectable tab
   useEffect(() => {

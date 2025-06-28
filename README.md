@@ -24,31 +24,58 @@ export default tseslint.config({
   languageOptions: {
     // other options...
     parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
       tsconfigRootDir: import.meta.dirname,
     },
   },
-})
+});
 ```
 
 You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
 ```js
 // eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+import reactX from "eslint-plugin-react-x";
+import reactDom from "eslint-plugin-react-dom";
 
 export default tseslint.config({
   plugins: {
     // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
+    "react-x": reactX,
+    "react-dom": reactDom,
   },
   rules: {
     // other rules...
     // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
+    ...reactX.configs["recommended-typescript"].rules,
     ...reactDom.configs.recommended.rules,
   },
-})
+});
 ```
+
+# Custom Chrome Extension - Manual Installation Guide
+
+This guide will walk you through how to install this Chrome extension manually using the `dist` folder.
+
+---
+
+## 🚀 Installation Steps
+
+1. **Open Chrome Extension Page**
+
+   - Open Google Chrome.
+   - Navigate to: `chrome://extensions/`
+   - Or click the three-dot menu → **Extensions** → **Manage Extensions**.
+
+2. **Enable Developer Mode**
+
+   - On the top-right of the Extensions page, toggle **Developer mode** to ON.
+
+3. **Load Unpacked Extension**
+
+   - Click on the **"Load unpacked"** button.
+   - In the file dialog that appears, navigate to this project’s `dist` folder and select it.
+
+4. **You're Done! 🎉**
+   - The extension should now appear in your list of installed extensions.
+   - Pin it to your toolbar for easier access (optional).

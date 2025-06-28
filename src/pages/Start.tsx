@@ -37,6 +37,7 @@ const Start: React.FC = () => {
     if (isProcessed && isCleaned) {
       window.location.reload();
     } else {
+      // console.log("Resetting state");
       setIsProcessed(false);
       setIsCleaned(false);
       setDownloadUrl("");
